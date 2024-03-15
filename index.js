@@ -27,7 +27,7 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   connect();
   // sendMailCronJob()
-  changeStatus()
+  // changeStatus()
   console.log(`Server is running on port ${PORT}`);
 });
 
