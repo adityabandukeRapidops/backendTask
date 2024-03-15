@@ -6,6 +6,7 @@ const cors = require("cors");
 dotenv.config();
 app.use(cors());
 app.use(express.json());
+const {sendMailCronJob , changeStatus} = require('./utils/cronJob')
 
 const userRoute = require('./routes/user.route')
 const htmlRoute = require('./routes/html.route')
@@ -25,6 +26,8 @@ app.use('/rapidops/api/htmlFile' , htmlRoute)
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   connect();
+  // sendMailCronJob()
+  changeStatus()
   console.log(`Server is running on port ${PORT}`);
 });
 

@@ -2,35 +2,58 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const htmlSchema = Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    subtext: {
+        type: String,
+    },
+    code: {
+        type: String,
+        required: true
+    },
+    endPoint: {
+        type: String,
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ["draft", "scheduled", "published"],
+    },
+    uid: {
+        type: String,
+    },
+    
+    isPublished: {
+        type: String,
+        default: false
+    },
+    
+    createdBy: {
+        type: String,
 
-    code : {
-        type : String,
-        required : true
     },
-    endPoint : {
-        type : String,
-        required : true
+    createdAt: {
+        type: Date,
     },
-    uid : {
-        type : String,
-        required : true
+    modifiedBy: {
+        type: String,
     },
-    image : {
-        type : String,
-
+    modifiedAt: {
+        type: Date
     },
-    isPublished : {
-        type : String,
-        default : false
+    file: {
+        type: String
     },
-    date : {
-        type : Date
+    publishDate: {
+        type: String,
     },
-    time : {
-        type : String
+    publishTime: {
+        type: String
     }
 },
-{timestamps : true})
+    { timestamps: true })
 
 
 module.exports = mongoose.model('Html', htmlSchema);
