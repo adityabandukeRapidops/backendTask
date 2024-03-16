@@ -15,10 +15,13 @@ const { getHtmlbyquery } = require('../repository/html.repo.js');
 const postHtmlCode = async (req, res) => {
     try {
         const { uid } = req.query;
-        const { title, subtext, code, endPoint, status, publishDate, publishTime } = req.body;
+        console.log(uid)
+        const { title, subtext, code, endPoint, status } = req.body;
         console.log(req.file)
         // console.log(file)
         if (req.file) {
+            const [err, user] = await getUserByQuery({ _id: uid });
+            console.log(user, err);
             // console.log(file);
             console.log('coiming in')
             const filePath = req.file.path;
@@ -39,15 +42,15 @@ const postHtmlCode = async (req, res) => {
                     status,
                     createdBy: user[0].name,
                     createdAt: Date.now(),
-                    publishDate,
-                    publishTime,
+                    publishDate: "12/02/2000",
+                    publishTime: "33:23",
                     file: result.secure_url,
                 });
                 res.status(201).json({ newHtml });
             });
         } else {
 
-
+            console.log(req.body)
             const [err, user] = await getUserByQuery({ _id: uid });
             console.log(user, err);
             if (err) {
@@ -66,8 +69,8 @@ const postHtmlCode = async (req, res) => {
                 status,
                 createdBy: user[0].name,
                 createdAt: Date.now(),
-                publishDate,
-                publishTime
+                publishDate: "12/02/2000",
+                publishTime: "33:23"
 
 
             });
@@ -84,11 +87,23 @@ const getHtmlCode = async (req, res) => {
     try {
         const { endPoint } = req.params;
         console.log(endPoint);
-        const htmlData = await Html.findOne({ endPoint });
-        console.log(htmlData);
+        const htmlData = await Html.findOne({ endPoint: endPoint });
         if (!htmlData) {
             return res.status(404).send('HTML code not found');
         }
+        console.log(htmlData);
+        console.log(htmlData.publishTime, 'publishTime');
+        console.log(htmlData.publishDate, 'publishDate')
+        const publishDate = htmlData.publishDate;
+        const publishTime = htmlData.publishTime;
+        const isValid = isPublishDateTimeValid(publishDate, publishTime);
+        // console.log("Is publish date and time valid?", isValid);
+
+        if(!isValid){
+            return res.status(404).send('code is not deployed yet!! wait kar bhai')
+        }
+
+        
         res.status(200).send(htmlData.code);
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -143,6 +158,24 @@ const getHtmlByusercreatedItandStatus = async (req, res) => {
         res.status(500).send('some error in fetching user htmls')
     }
 }
+
+function isPublishDateTimeValid(publishDate, publishTime) {
+    // Get the current date and time
+    const currentDate = new Date();
+    const currentTime = currentDate.getTime(); // Get current time in milliseconds since epoch
+
+    // Parse publishDate and publishTime strings into Date objects
+    const [day, month, year] = publishDate.split('-').map(Number);
+    const [hours, minutes] = publishTime.split(':').map(Number);
+    const publishDateTime = new Date(year, month - 1, day, hours, minutes); // Month is 0-indexed in Date constructor
+
+    // Compare publishDateTime with current date and time
+    return publishDateTime.getTime() < currentTime;
+}
+
+// Example usage:
+
+
 
 
 
