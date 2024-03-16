@@ -2,9 +2,11 @@ const Html = require('../models/htmlCode.js')
 
 const getHtmlbyquery = async (query) => {
     try {
-      console.log(query)
+      console.log(query , 'lkjljlkj')
+
       console.log('coming in this ')
       let html = await Html.find(query);
+
       console.log(html , 'why');
       return [null, html];
     } catch (err) {

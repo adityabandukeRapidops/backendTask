@@ -1,6 +1,7 @@
 const { createUser, getUserByEmail } = require("../repository/user.repo");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const User = require('../models/user')
 const {
   badRequestResponse,
   handle304,
@@ -56,7 +57,7 @@ const userSignin = async (req, res) => {
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
     let data = {
       time: Date(),
-      userId: user[0]._id,
+      uid: user[0]._id,
       email: user[0].email,
     };
 
@@ -98,8 +99,23 @@ const _createHash = async (password) => {
 };
 
 
+const getAllUsers = async (req,res)=>{
+  try{
+    const users = await User.find();
+    console.log(users)
+    if(users.length <=0){
+      return res.status(200).send('no user in application')
+    }
+    res.status(200).send(users)
+  }catch(e){
+    res.status(500).send(e)
+  }
+}
+
+
 
 module.exports = {
   userSignup,
   userSignin,
+  getAllUsers
 };

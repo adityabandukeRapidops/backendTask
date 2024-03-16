@@ -8,7 +8,8 @@ const {
     notFoundResponse,
 } = require("../utils/response");
 
-const cloudinary = require('../utils/cloudinary.js')
+const cloudinary = require('../utils/cloudinary.js');
+const { getHtmlbyquery } = require('../repository/html.repo.js');
 
 
 const postHtmlCode = async (req, res) => {
@@ -21,12 +22,12 @@ const postHtmlCode = async (req, res) => {
             // console.log(file);
             console.log('coiming in')
             const filePath = req.file.path;
-            
+
             cloudinary.uploader.upload(filePath, async (err, result) => {
                 console.log('coming here')
                 if (err) {
                     console.log('here is the error')
-                    return res.status(500).json({ error: err.message  , });
+                    return res.status(500).json({ error: err.message, });
                 }
                 console.log(result.secure_url);
                 const newHtml = await Html.create({
@@ -118,6 +119,30 @@ const getAllCodeByStatus = async (req, res) => {
     }
 }
 
+const getHtmlByusercreatedItandStatus = async (req, res) => {
+    try {
+        const { status, user } = req.query;
+        console.log(status, user);
+
+        let query = {};
+        if (status !== 'All' && user !== 'All') {
+            query = { status: status, createdBy: user };
+        } else if (status !== 'All') {
+            query = { status: status };
+        } else if (user !== 'All') {
+            query = { createdBy: user };
+        }
+        console.log(query);
+        console.log(user, 'gettting uid in by user')
+        const [err, htmls] = await getHtmlbyquery(query);
+        if (htmls.length <= 0) {
+            return res.status(200).send([])
+        }
+        res.status(200).send(htmls);
+    } catch (e) {
+        res.status(500).send('some error in fetching user htmls')
+    }
+}
 
 
 
@@ -125,5 +150,6 @@ module.exports = {
     postHtmlCode,
     getHtmlCode,
     getAllCodesHtml,
-    getAllCodeByStatus
+    getAllCodeByStatus,
+    getHtmlByusercreatedItandStatus
 }
