@@ -16,6 +16,7 @@ const postHtmlCode = async (req, res) => {
     try {
         const { uid } = req.query;
         console.log(uid)
+        console.log(req.body , 'file is coming or not')
         const { title, subtext, code, endPoint, status } = req.body;
         console.log(req.file)
         // console.log(file)
