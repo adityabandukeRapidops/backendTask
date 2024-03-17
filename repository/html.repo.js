@@ -31,7 +31,21 @@ const getHtmlbyquery = async (query) => {
     }
   }
 
+  const deleteHtmlById = async (id)=>{
+    try{
+      const deleteHtml = await Html.findByIdAndDelete(id);
+      if(!deleteHtml){
+        return null;
+      }
+      return [null , deleteHtml];
+    }catch(e){
+      return [e,null];
+    }
+  }
+
   module.exports = {
     getHtmlbyquery,
-    updateHtmlById
+    updateHtmlById,
+    deleteHtmlById,
+
   }

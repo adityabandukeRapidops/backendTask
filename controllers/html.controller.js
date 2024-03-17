@@ -9,7 +9,7 @@ const {
 } = require("../utils/response");
 
 const cloudinary = require('../utils/cloudinary.js');
-const { getHtmlbyquery } = require('../repository/html.repo.js');
+const { getHtmlbyquery, deleteHtmlById, updateHtmlById } = require('../repository/html.repo.js');
 
 
 const postHtmlCode = async (req, res) => {
@@ -173,7 +173,34 @@ function isPublishDateTimeValid(publishDate, publishTime) {
     return publishDateTime.getTime() < currentTime;
 }
 
-// Example usage:
+
+const deleteSelectedHtml = async (req,res)=>{
+    try{
+        const {id} = req.params;
+        const [err , deleted] = await deleteHtmlById(id);
+        if(err){
+            return res.status(400).send('error in deleting html')
+        }
+        res.status(200).send('deleted success')
+    }catch(e){
+        res.status(400).send(e);
+    }   
+}
+
+const updateSelectedHtml = async (req,res)=>{
+    try{
+        const {id} = req.params;
+        const updatedHtml = await updateHtmlById(id,data);
+        if(!updatedHtml){
+            return res.status(400).send('failed to update')
+        }
+        res.staus(200).send('updated success');
+    }catch(e){
+        res.status(500).send('some error in updateing')
+    }
+}
+
+
 
 
 
@@ -184,5 +211,7 @@ module.exports = {
     getHtmlCode,
     getAllCodesHtml,
     getAllCodeByStatus,
-    getHtmlByusercreatedItandStatus
+    getHtmlByusercreatedItandStatus,
+    deleteSelectedHtml,
+    updateSelectedHtml
 }
