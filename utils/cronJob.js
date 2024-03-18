@@ -15,19 +15,37 @@ function sendMailCronJob() {
         try {
             let date = new Date().toLocaleDateString();
             console.log(date);
+            const [cmonth, cday, cyear] = date.split('/').map(Number);
+    const todayDate = `${cyear}-0${cmonth}-${cday}`;
+    console.log(todayDate)
             const query = {
-                // publishDate: {
-                //     $eq: date
-                // },
+                publishDate: {
+                    $eq: todayDate
+                },
                 status: {
                     $ne: "published"
-                }
+                }// users.forEach(async (user) => {
+            //     console.log(user)
+            //     await sendEmail(user.email, 'hi user', 'code will get published soon');
+            // });
             };
             const [err, htmls] = await getHtmlbyquery(query);
-            const uidArray = [];
+            console.log(htmls.length , 'length');
+
+            let uidArray = [];
             for (let i in htmls) {
+               
+                
+                console.log(htmls[i].uid);
                 uidArray.push(htmls[i].uid)
             }
+
+            let setUid = new Set(uidArray);
+            uidArray = [...setUid];
+
+
+
+            console.log(uidArray , 'uidarray')
 
             let query2 = { _id: { $in: uidArray } }
 
@@ -35,19 +53,45 @@ function sendMailCronJob() {
             console.log(users);
 
             const emailArray = [];
+            const uidEmailMap = {}; 
 
             for (let i in users) {
-                emailArray.push(users[i].email)
+                const { _id, email } = users[i];
+    emailArray.push(email);
+    uidEmailMap[_id] = email; 
             }
 
+            const userHtmlInfo = {};
             console.log(emailArray)
+            uidArray.forEach(async (uid) => {
+                const userHtmls = htmls.filter(html => html.uid === uid);
+            
+                const userHtmlArray = [];
+            
+                userHtmls.forEach(html => {
+                    const { publishDate, publishTime, endPoint, title } = html;
+            
+                    const htmlInfo = { publishDate, publishTime, endPoint, title };
+            
+                    userHtmlArray.push(htmlInfo);
+                });
+                const email = uidEmailMap[uid];
+            
+                userHtmlInfo[email] = userHtmlArray;
+            
+            });
+
+            console.log(userHtmlInfo , 'object of info')
 
 
-
-            // users.forEach(async (user) => {
-            //     console.log(user)
-            //     await sendEmail(user.email, 'hi user', 'code will get published soon');
-            // });
+            for (const email in userHtmlInfo) {
+                if (userHtmlInfo.hasOwnProperty(email)) {
+                  console.log(email);
+                  const htmlArray = userHtmlInfo[email];
+                  const emailContent = htmlArray.map(html => `Publish Date: ${html.publishDate}, Publish Time: ${html.publishTime}, End Point: ${html.endPoint}, Title: ${html.title}`).join('\n\n');
+                  await sendEmail(email, 'Hi User', emailContent);
+                }
+              }
 
             console.log('Emails sent successfully.');
         } catch (error) {

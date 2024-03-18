@@ -178,6 +178,7 @@ function isPublishDateTimeValid(publishDate, publishTime) {
     const todayDate = `${cday}-${cmonth}-${cyear}`;
     // console.log(cday, cmonth, cyear);
 
+
     console.log(pubDate , todayDate , 'ljlk');
     console.log(pubDate === todayDate);
 
@@ -189,7 +190,8 @@ function isPublishDateTimeValid(publishDate, publishTime) {
     const time = `${currentHour}:${currentMinute}`;
 
 
-
+    console.log(pubTime , time);
+    console.log(pubDate ,todayDate)
     console.log(pubTime === time)
 
 
