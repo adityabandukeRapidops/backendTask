@@ -18,6 +18,7 @@ const postHtmlCode = async (req, res) => {
         console.log(uid)
         console.log(req.body, 'file is coming or not')
         const { title, subtext, code, endPoint, status } = req.body;
+        let modifiedCode = code;
         console.log(req.file)
         // console.log(file)
         if (req.file) {
@@ -34,10 +35,12 @@ const postHtmlCode = async (req, res) => {
                     return res.status(500).json({ error: err.message, });
                 }
                 console.log(result.secure_url);
+                const fileLink = `<a href="${result.secure_url}">${result.secure_url}</a>`;
+                modifiedCode = modifiedCode.replace('</body>', `${fileLink}</body>`);
                 const newHtml = await Html.create({
                     title,
                     subtext,
-                    code,
+                    code : modifiedCode,
                     uid,
                     endPoint,
                     status,
@@ -274,9 +277,10 @@ const getHtmlById = async (req,res)=>{
 const updateHtml = async (req,res)=>{
     try{
         const {id} = req.params;
+        console.log(id)
         const data = req.body;
-        console.log(data);
-        const updatedHtml = await findOneAndUpdate({ _id: id }, data, { new: true })
+        console.log(data , 'data is coming or not');
+        const updatedHtml = await Html.findOneAndUpdate({ _id: id }, data, { new: true })
         res.status(200).send(updatedHtml);
     }catch(e){
         res.status(500).send('error')
