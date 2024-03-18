@@ -16,7 +16,7 @@ const postHtmlCode = async (req, res) => {
     try {
         const { uid } = req.query;
         console.log(uid)
-        console.log(req.body , 'file is coming or not')
+        console.log(req.body, 'file is coming or not')
         const { title, subtext, code, endPoint, status } = req.body;
         console.log(req.file)
         // console.log(file)
@@ -98,13 +98,21 @@ const getHtmlCode = async (req, res) => {
         const publishDate = htmlData.publishDate;
         const publishTime = htmlData.publishTime;
         const isValid = isPublishDateTimeValid(publishDate, publishTime);
+        console.log(isValid, "why")
+        console.log(typeof isValid)
         // console.log("Is publish date and time valid?", isValid);
-
-        if(!isValid){
+        console.log(htmlData.status)
+        console.log(isValid == false)
+        console.log( htmlData.status !== "published" , 'jwheyy') ;
+        if (isValid == false && htmlData.status !== "published") {
             return res.status(404).send('code is not deployed yet!! wait kar bhai')
         }
 
-        
+        // htmlData.status = "published";
+        // htmlData.isPublished = "true";
+        console.log('coiming why')
+        console.log(htmlData);
+        await htmlData.save();
         res.status(200).send(htmlData.code);
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -161,49 +169,117 @@ const getHtmlByusercreatedItandStatus = async (req, res) => {
 }
 
 function isPublishDateTimeValid(publishDate, publishTime) {
-    // Get the current date and time
-    const currentDate = new Date();
-    const currentTime = currentDate.getTime(); // Get current time in milliseconds since epoch
+    const currentDate = new Date().toLocaleDateString();
 
-    // Parse publishDate and publishTime strings into Date objects
-    const [day, month, year] = publishDate.split('-').map(Number);
+ 
+    const [year, month, day] = publishDate.split('-').map(Number);
+    const [cmonth, cday, cyear] = currentDate.split('/').map(Number);
+    const pubDate = `${day}-${month}-${year}`;
+    const todayDate = `${cday}-${cmonth}-${cyear}`;
+    // console.log(cday, cmonth, cyear);
+
+    console.log(pubDate , todayDate , 'ljlk');
+    console.log(pubDate === todayDate);
+
     const [hours, minutes] = publishTime.split(':').map(Number);
-    const publishDateTime = new Date(year, month - 1, day, hours, minutes); // Month is 0-indexed in Date constructor
+    const pubTime = `${hours}:${minutes}`
+    const now = new Date();
+    const currentHour = now.getHours().toString().padStart(2, '0');
+    const currentMinute = now.getMinutes().toString().padStart(2, '0');
+    const time = `${currentHour}:${currentMinute}`;
 
-    // Compare publishDateTime with current date and time
-    return publishDateTime.getTime() < currentTime;
+
+
+    console.log(pubTime === time)
+
+
+
+    if(pubDate === todayDate && pubTime === time){
+        return true;
+    }
+    return false;
+
+
+    
 }
 
 
-const deleteSelectedHtml = async (req,res)=>{
-    try{
-        const {id} = req.params;
-        const [err , deleted] = await deleteHtmlById(id);
-        if(err){
+const deleteSelectedHtml = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const [err, deleted] = await deleteHtmlById(id);
+        if (err) {
             return res.status(400).send('error in deleting html')
         }
         res.status(200).send('deleted success')
-    }catch(e){
+    } catch (e) {
         res.status(400).send(e);
-    }   
+    }
 }
 
-const updateSelectedHtml = async (req,res)=>{
-    try{
-        const {id} = req.params;
-        const updatedHtml = await updateHtmlById(id,data);
-        if(!updatedHtml){
+const updateSelectedHtml = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedHtml = await updateHtmlById(id, data);
+        if (!updatedHtml) {
             return res.status(400).send('failed to update')
         }
         res.staus(200).send('updated success');
-    }catch(e){
+    } catch (e) {
         res.status(500).send('some error in updateing')
+    }
+}
+
+const updateFewHtmlFields = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(id)
+        console.log(req.body)
+        const updatedHtml = await Html.findById(id);
+        if (!updatedHtml) {
+            return res.send('eooror')
+        }
+        updatedHtml.publishDate = req.body.publishDate;
+        updatedHtml.publishTime = req.body.publishTime;
+        updatedHtml.status = req.body.status;
+        await updatedHtml.save();
+
+        res.status(200).send(updatedHtml)
+
+    } catch (e) {
+        res.send(e)
     }
 }
 
 
 
+const getHtmlById = async (req,res)=>{
+    try{
+        const {id} = req.params;
+        const html = await Html.findOne({_id : id});
 
+        console.log('coming intthis')
+        if(!html){
+            return res.status(400).send('error in getting html by id');
+        }
+        res.status(200).send(html)
+    }catch(e){
+        res.status(500).send('error in finding html')
+    }
+}
+
+
+const updateHtml = async (req,res)=>{
+    try{
+        const {id} = req.params;
+        const data = req.body;
+        console.log(data);
+        const updatedHtml = await findOneAndUpdate({ _id: id }, data, { new: true })
+        res.status(200).send(updatedHtml);
+    }catch(e){
+        res.status(500).send('error')
+    }
+}
 
 
 
@@ -214,5 +290,8 @@ module.exports = {
     getAllCodeByStatus,
     getHtmlByusercreatedItandStatus,
     deleteSelectedHtml,
-    updateSelectedHtml
+    updateSelectedHtml,
+    updateFewHtmlFields,
+    getHtmlById,
+    updateHtml
 }

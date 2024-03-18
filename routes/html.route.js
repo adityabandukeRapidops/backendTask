@@ -1,4 +1,4 @@
-const {postHtmlCode, getHtmlCode, getAllCodesHtml,getAllCodeByStatus,getHtmlByusercreatedItandStatus , deleteSelectedHtml} = require('../controllers/html.controller');
+const {postHtmlCode, getHtmlCode, getAllCodesHtml,getAllCodeByStatus,getHtmlByusercreatedItandStatus , deleteSelectedHtml ,updateFewHtmlFields ,getHtmlById ,updateHtml} = require('../controllers/html.controller');
 const express = require('express');
 const router = express.Router();
 const upload = require('../middlewares/multer.js');
@@ -10,6 +10,9 @@ router.get('/getAllCodes' ,userValidate, getAllCodesHtml);
 router.get('/getCodeByStatus' ,userValidate, getAllCodeByStatus);
 router.get('/getHtmlbyfilter'  , getHtmlByusercreatedItandStatus);
 router.delete('/deleteHtml/:id' , deleteSelectedHtml);
+router.patch('/updateHtml/:id' , updateFewHtmlFields)
+router.put('/updateHtmlFull/:id' , updateHtml)
+router.get('/HtmlbyId/:id' , getHtmlById )
  
 module.exports = router;
 
