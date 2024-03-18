@@ -108,8 +108,8 @@ const getHtmlCode = async (req, res) => {
             return res.status(404).send('code is not deployed yet!! wait kar bhai')
         }
 
-        // htmlData.status = "published";
-        // htmlData.isPublished = "true";
+        htmlData.status = "published";
+        htmlData.isPublished = "true";
         console.log('coiming why')
         console.log(htmlData);
         await htmlData.save();
