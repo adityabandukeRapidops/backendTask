@@ -112,10 +112,24 @@ const getAllUsers = async (req,res)=>{
   }
 }
 
+const getUserById = async (req,res)=>{
+  try{
+    const {id} = req.params;
+    const user = await User.findOne({_id : id})
+    if(!user){
+      return res.status(500).send('error in fetching user')
+    }
+    res.status(200).send(user);
+  }catch(e){
+    res.status(500).send('error in getting user')
+  }
+}
+
 
 
 module.exports = {
   userSignup,
   userSignin,
-  getAllUsers
+  getAllUsers,
+  getUserById
 };

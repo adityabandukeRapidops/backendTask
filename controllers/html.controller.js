@@ -35,7 +35,7 @@ const postHtmlCode = async (req, res) => {
                     return res.status(500).json({ error: err.message, });
                 }
                 console.log(result.secure_url);
-                const fileLink = `<a href="${result.secure_url}">${result.secure_url}</a>`;
+                const fileLink = `<a href="${result.secure_url}" download=${result.secure_url}>Download File</a>`;
                 modifiedCode = modifiedCode.replace('</body>', `${fileLink}</body>`);
                 const newHtml = await Html.create({
                     title,

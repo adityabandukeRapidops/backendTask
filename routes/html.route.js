@@ -11,7 +11,7 @@ router.get('/getCodeByStatus' ,userValidate, getAllCodeByStatus);
 router.get('/getHtmlbyfilter'  , getHtmlByusercreatedItandStatus);
 router.delete('/deleteHtml/:id' , deleteSelectedHtml);
 router.patch('/updateHtml/:id' , updateFewHtmlFields)
-router.patch('/updateHtmlFull/:id' , updateHtml)
+router.patch('/updateHtmlFull/:id' ,upload.single('file'), updateHtml)
 router.get('/HtmlbyId/:id' , getHtmlById )
  
 module.exports = router;
