@@ -10,7 +10,7 @@ const { getUserByQuery } = require('../repository/user.repo.js');
 
 function sendMailCronJob() {
     console.log('time started')
-    cron.schedule('* * 11 * * *', async () => {
+    cron.schedule('0 8 * * *', async () => {
 
         try {
             let date = new Date().toLocaleDateString();
